@@ -13,16 +13,19 @@
         android:theme="@style/Theme.Infic"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Infic">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".writer.WriterActivity" />
+        <activity android:name=".player.PlayerActivity" />
+        <activity android:name=".importer.ImportActivity" />
     </application>
 
 </manifest>

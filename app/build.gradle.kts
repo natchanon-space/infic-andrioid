@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.natch.app.infic"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.natch.app.infic"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
