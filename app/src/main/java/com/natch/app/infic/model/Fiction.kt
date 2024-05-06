@@ -3,6 +3,7 @@ package com.natch.app.infic.model
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@Serializable
 class Fiction constructor(
     var title: String,
     var author: String
@@ -78,5 +79,9 @@ class Fiction constructor(
             }
         }
         throw Exception("Scene with UUID <$uuid> is not found.")
+    }
+
+    fun getJsonName(): String {
+        return "$title-by-$author.json"
     }
 }

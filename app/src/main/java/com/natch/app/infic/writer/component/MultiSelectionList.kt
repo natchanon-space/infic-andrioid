@@ -58,7 +58,10 @@ fun <T> MultiSelectionList(
     key: ((T) -> Any)? = null,
     onClick: (T) -> Unit,
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        userScrollEnabled = true
+    ) {
         items(
             items,
             key = key

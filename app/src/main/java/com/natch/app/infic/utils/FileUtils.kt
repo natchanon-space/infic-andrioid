@@ -8,9 +8,9 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 
-fun writeFictionToJson(fiction: Fiction, context: Context) {
+fun writeFictionToJsonFile(fiction: Fiction, context: Context) {
     val path = context.filesDir.path
-    val fileName = "${fiction.title}-by-${fiction.author}.json"
+    val fileName = fiction.getJsonName()
     try {
         val writer = FileOutputStream(File(path, fileName))
         val json = Json.encodeToString(fiction)
@@ -41,13 +41,13 @@ fun readAllFictionsFromDir(context: Context): MutableList<Fiction> {
     return fictions
 }
 
-fun deleteFictionFromDir(fileName: String, context: Context) {
+fun deleteFictionFromDir(fiction: Fiction, context: Context) {
     try {
-        context.deleteFile(fileName)
-        Log.d(TAG, "Deleted: $fileName from directory")
+        context.deleteFile(fiction.getJsonName())
+        Log.d(TAG, "Deleted: ${fiction.getJsonName()} from directory")
     } catch (error: Exception) {
         error.printStackTrace()
     }
 }
 
-const val TAG = "utils.FileUtils"
+const val TAG = "FileUtils"
