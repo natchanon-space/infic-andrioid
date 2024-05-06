@@ -1,9 +1,7 @@
 package com.natch.app.infic.writer.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +28,9 @@ fun FictionCard(
         border = BorderStroke(1.dp, Color.Black),
         modifier = modifier
     ) {
-        Column() {
+        Column {
             Text(
-                "${fiction.title}",
+                fiction.title,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier

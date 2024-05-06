@@ -23,9 +23,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".writer.WriterActivity" />
-        <activity android:name=".player.PlayerActivity" />
-        <activity android:name=".importer.ImportActivity" />
+        <activity
+            android:name=".writer.WriterActivity"
+            android:theme="@style/Theme.Infic" />
+        <activity
+            android:name=".player.PlayerActivity"
+            android:theme="@style/Theme.Infic" />
+        <activity
+            android:name=".importer.ImportActivity"
+            android:theme="@style/Theme.Infic" />
     </application>
 
 </manifest>

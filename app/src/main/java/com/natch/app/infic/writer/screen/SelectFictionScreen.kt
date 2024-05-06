@@ -1,6 +1,5 @@
 package com.natch.app.infic.writer.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,11 +16,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.natch.app.infic.model.Fiction
 import com.natch.app.infic.model.FictionViewModel
@@ -32,13 +29,14 @@ import com.natch.app.infic.writer.component.rememberMultiSelectionState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectFictionScreen(viewModel: FictionViewModel) {
-
-    // val fictions = (1..100).toMutableList()
+fun SelectFictionScreen(
+    viewModel: FictionViewModel,
+    selectFictionCallback: () -> Unit = { }
+) {
     val fictions = remember { mutableStateListOf(Fiction("A", "Auth-A"), Fiction("B", "Auth-B")) }
     val selectedItems = remember { mutableStateListOf<Fiction>() }
     val multiSelectionState = rememberMultiSelectionState()
-    val context = LocalContext.current
+
     val configuration = LocalConfiguration.current
 
     Scaffold(
@@ -96,12 +94,12 @@ fun SelectFictionScreen(viewModel: FictionViewModel) {
             key = { fiction ->
                 fictions.indexOf(fiction)
             },
-            onClick = {
+            onClick = {fiction ->
                 if (multiSelectionState.isMultiSelectionModeEnabled) {
-                    selectedItems.add(it)
+                    selectedItems.add(fiction)
                 } else {
-                    // TODO: go to edit screen
-                    Toast.makeText(context, "Click ${it.title}", Toast.LENGTH_SHORT).show()
+                    viewModel.currentFiction.value = fiction
+                    selectFictionCallback()
                 }
             }
         )

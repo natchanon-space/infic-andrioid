@@ -1,6 +1,5 @@
 package com.natch.app.infic.writer
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,16 +7,14 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.natch.app.infic.model.Fiction
 import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.ui.theme.InficTheme
-import com.natch.app.infic.utils.readAllFictionsFromDir
 import com.natch.app.infic.writer.screen.EditFictionScreen
 import com.natch.app.infic.writer.screen.SelectFictionScreen
 
@@ -43,7 +40,12 @@ class WriterActivity: ComponentActivity() {
                         modifier = Modifier
                     ) {
                         composable("SelectFictionScreen") {
-                            SelectFictionScreen(viewModel)
+                            SelectFictionScreen(
+                                viewModel,
+                                selectFictionCallback = {
+                                    navController.navigate("EditFictionScreen")
+                                }
+                            )
                         }
                         composable("EditFictionScreen") {
                             EditFictionScreen(viewModel)
