@@ -20,16 +20,15 @@ import com.natch.app.infic.model.Fiction
 
 @Composable
 fun FictionCard(
-    fiction: Fiction
+    fiction: Fiction,
+    modifier: Modifier = Modifier
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, Color.Black),
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
+        modifier = modifier
     ) {
         Column() {
             Text(

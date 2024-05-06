@@ -1,10 +1,10 @@
 package com.natch.app.infic.writer.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -13,15 +13,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.natch.app.infic.model.Fiction
 import com.natch.app.infic.model.FictionViewModel
+import com.natch.app.infic.utils.conditional
+import com.natch.app.infic.writer.component.FictionCard
 import com.natch.app.infic.writer.component.MultiSelectionList
 import com.natch.app.infic.writer.component.rememberMultiSelectionState
 
@@ -29,10 +34,12 @@ import com.natch.app.infic.writer.component.rememberMultiSelectionState
 @Composable
 fun SelectFictionScreen(viewModel: FictionViewModel) {
 
-    val numbers = (1..100).toMutableList()
-    val selectedItems = remember { mutableStateListOf<Int>() }
+    // val fictions = (1..100).toMutableList()
+    val fictions = remember { mutableStateListOf(Fiction("A", "Auth-A"), Fiction("B", "Auth-B")) }
+    val selectedItems = remember { mutableStateListOf<Fiction>() }
     val multiSelectionState = rememberMultiSelectionState()
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
 
     Scaffold(
         topBar = {
@@ -49,10 +56,8 @@ fun SelectFictionScreen(viewModel: FictionViewModel) {
                     },
                     actions = {
                         IconButton(onClick = {
-                            selectedItems.sort()
-                            selectedItems.reverse()
                             for (item in selectedItems) {
-                                numbers.remove(item)
+                                fictions.remove(item)
                             }
                             selectedItems.clear()
                         }) {
@@ -68,24 +73,35 @@ fun SelectFictionScreen(viewModel: FictionViewModel) {
         MultiSelectionList(
             modifier = Modifier.padding(top = it.calculateTopPadding()),
             state = multiSelectionState,
-            items = numbers,
+            items = fictions,
             selectedItems = selectedItems,
-            itemContent = {
-                Text(
-                    text = it.toString(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
+            itemContent = {fiction ->
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    FictionCard(
+                        fiction,
+                        modifier = Modifier
+                            .conditional(!multiSelectionState.isMultiSelectionModeEnabled) {
+                                fillMaxWidth()
+                            }
+                            .conditional(multiSelectionState.isMultiSelectionModeEnabled) {
+                                // TODO: this is static number, please change it
+                                width((configuration.screenWidthDp - 50).dp)
+                            }
+                    )
+                }
             },
-            key = { num ->
-                num
+            key = { fiction ->
+                fictions.indexOf(fiction)
             },
             onClick = {
                 if (multiSelectionState.isMultiSelectionModeEnabled) {
                     selectedItems.add(it)
                 } else {
-                    Toast.makeText(context, "Click $it", Toast.LENGTH_SHORT).show()
+                    // TODO: go to edit screen
+                    Toast.makeText(context, "Click ${it.title}", Toast.LENGTH_SHORT).show()
                 }
             }
         )
