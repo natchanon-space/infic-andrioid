@@ -18,9 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.natch.app.infic.model.FictionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,14 +68,19 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
             startDestination = "EditScene",
             modifier = Modifier.padding(paddingValues)
         ) {
+            // TODO: implement these route and their screens
+            // TODO: dynamic top bar icons and actions
             composable("EditScene") {
-
+                EditSceneScreen()
+            }
+            composable("EditScene/{sceneUUID}", arguments = listOf(navArgument("sceneUUID") { type = NavType.StringType })) {
+                EditSceneUUIDScreen()
             }
             composable("EditParameter") {
-
+                EditParameterScreen()
             }
             composable("EditProfile") {
-
+                EditProfileScreen()
             }
         }
     }

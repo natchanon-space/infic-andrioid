@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -62,12 +60,12 @@ fun SelectFictionScreen(
     val multiSelectionState = rememberMultiSelectionState()
 
     var addFictionDialog by rememberSaveable { mutableStateOf(false) }
-    var delFictionDialog by rememberSaveable { mutableStateOf(false) }
-
 
     Scaffold(
         topBar = {
             if (multiSelectionState.isMultiSelectionModeEnabled) {
+                // delete fictions
+                // TODO: add dialog before confirming delete
                 TopAppBar(
                     title = { },
                     navigationIcon = {
@@ -80,7 +78,6 @@ fun SelectFictionScreen(
                     },
                     actions = {
                         IconButton(onClick = {
-                            // TODO: add dialog before confirming delete
                             for (item in selectedItems) {
                                 deleteFictionFromDir(item, context)
                             }
@@ -94,12 +91,15 @@ fun SelectFictionScreen(
                     }
                 )
             } else {
+                // add fiction
                 TopAppBar(
                     title = { Text("Writer") },
                     actions = {
                         IconButton(onClick = { addFictionDialog = true }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Add Fiction")
                         }
+                        // TODO: (Optional) add search bar
+                        // TODO: (Optional) add fiction filter (e.g. by name, by author)
                     }
                 )
             }
@@ -133,15 +133,22 @@ fun SelectFictionScreen(
             },
             onClick = {fiction ->
                 if (multiSelectionState.isMultiSelectionModeEnabled) {
-                    selectedItems.add(fiction)
+                    if (fiction in selectedItems) {
+                        selectedItems.remove(fiction)
+                    } else {
+                        selectedItems.add(fiction)
+                    }
                 } else {
+                    // update view model with selected fiction
                     viewModel.currentFiction.value = fiction
+                    // navigate back
                     selectFictionCallback()
                 }
             }
         )
     }
 
+    // add fiction dialog card
     if (addFictionDialog) {
         var title by rememberSaveable { mutableStateOf("") }
         var author by rememberSaveable { mutableStateOf("") }
