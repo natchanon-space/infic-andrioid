@@ -65,6 +65,11 @@ class Fiction constructor(
         // update first scene on check
         if (isFirstScene) {
             firstSceneUUID = scene.uuid
+
+            // allowing one first scene per fiction
+            for (s in scenes) {
+                s.isFirstScene = (s.uuid == firstSceneUUID)
+            }
         }
     }
 

@@ -73,13 +73,32 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
             startDestination = "EditScene",
             modifier = Modifier.padding(paddingValues)
         ) {
-            // TODO: implement these route and their screens
-            // TODO: dynamic top bar icons and actions
+            // TODO: (Optional) dynamic top bar icons and actions
             composable("EditScene") {
-                EditSceneScreen(viewModel)
+                EditSceneScreen(viewModel, selectSceneCallback = { uuid ->
+                    navController.navigate("EditScene/${uuid}") {
+                        // don't add current screen to backstack
+                        popUpTo(navController.currentDestination!!.id) {
+                            inclusive = true
+                        }
+                    }
+                })
             }
-            composable("EditScene/{sceneUUID}", arguments = listOf(navArgument("sceneUUID") { type = NavType.StringType })) {
-                EditSceneUUIDScreen()
+            composable(
+                "EditScene/{sceneUUID}",
+                arguments = listOf(navArgument("sceneUUID") { type = NavType.StringType })
+            ) {
+                EditSceneUUIDScreen(
+                    viewModel,
+                    it.arguments?.getString("sceneUUID")!!,
+                    saveCallback = {
+                        navController.navigate("EditScene") {
+                            // don't add current screen to backstack
+                            popUpTo(navController.currentDestination!!.id) {
+                                inclusive = true
+                            }
+                        }
+                    })
             }
             composable("EditParameter") {
                 EditParameterScreen(viewModel)

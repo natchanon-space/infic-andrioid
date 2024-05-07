@@ -19,6 +19,7 @@ fun SceneCard(
     scene: Scene,
     modifier: Modifier = Modifier
 ) {
+    // TODO: change style of scene card
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor =  MaterialTheme.colorScheme.surface

@@ -20,9 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,11 +32,12 @@ import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.model.Scene
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.SceneCard
-import com.natch.app.infic.writer.component.rememberMultiSelectionState
+import java.util.UUID
 
 @Composable
 fun EditSceneScreen(
-    viewModel: FictionViewModel
+    viewModel: FictionViewModel,
+    selectSceneCallback: (UUID) -> Unit = { _ -> }
 ) {
     val context = LocalContext.current
 
@@ -78,7 +77,7 @@ fun EditSceneScreen(
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        // TODO: implement onClick here (nav to edit scene uuid)
+                        selectSceneCallback(scene.uuid!!)
                     }) {
                     SceneCard(scene, modifier = Modifier.fillMaxWidth())
                 }
