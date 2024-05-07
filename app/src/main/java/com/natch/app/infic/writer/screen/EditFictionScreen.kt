@@ -76,7 +76,7 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
             // TODO: implement these route and their screens
             // TODO: dynamic top bar icons and actions
             composable("EditScene") {
-                EditSceneScreen()
+                EditSceneScreen(viewModel)
             }
             composable("EditScene/{sceneUUID}", arguments = listOf(navArgument("sceneUUID") { type = NavType.StringType })) {
                 EditSceneUUIDScreen()

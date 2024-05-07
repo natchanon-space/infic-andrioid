@@ -7,12 +7,13 @@ import java.util.UUID
 class Scene constructor(
     var title: String,
     @Serializable(with = UUIDSerializer::class)
-    var uuid: UUID?
+    var uuid: UUID? = UUID.randomUUID()
 ) {
     var story: String = ""
     var choices = mutableListOf<Choice>()
     var inputParameters = mutableListOf<String>()
     var isEndingScene: Boolean = false
+    var isFirstScene: Boolean = false
 
     fun addChoice(choice: Choice) {
         choices.add(choice)
