@@ -1,7 +1,6 @@
 package com.natch.app.infic.writer.screen
 
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,11 +9,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -37,7 +38,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.DropDownSearch
@@ -57,7 +57,7 @@ fun EditSceneUUIDScreen(
     var title by rememberSaveable { mutableStateOf(currentScene.title) }
     var story by rememberSaveable { mutableStateOf(currentScene.story) }
     val choices by rememberSaveable { mutableStateOf(currentScene.choices) }
-    val inputParameters = mutableStateListOf<String>()
+    val inputParameters = remember { mutableStateListOf<String>() }
     inputParameters.clear()
     inputParameters.addAll(currentScene.inputParameters)
     var isEndingScene by rememberSaveable { mutableStateOf(currentScene.isEndingScene) }
@@ -160,7 +160,7 @@ fun EditSceneUUIDScreen(
             if (enableInputs) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Input Parameters")
-                    IconButton(onClick = { inputParameters.add(UUID.randomUUID().toString()) }) {
+                    IconButton(onClick = { inputParameters.add("") }) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Parameter Icon")
                     }
                 }
@@ -169,16 +169,25 @@ fun EditSceneUUIDScreen(
                     state = lazyState,
                     modifier = Modifier.heightIn(max = 1000.dp)
                 ) {
-                    items(
+                    itemsIndexed(
                         inputParameters,
-                        key = { it }
-                    ) {
-                        Text(text = it)
-                        DropDownSearch(
-                            items = viewModel.currentFiction.value!!.parameters.keys.toList(),
-                            mapper = { s -> s },
-                            defaultSelectedItem = it
-                        )
+                        key = { index, _ -> "item-${index}"}
+                    ) { index, item ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            DropDownSearch(
+                                items = viewModel.currentFiction.value!!.parameters.keys.toList(),
+                                mapper = { s -> s },
+                                defaultSelectedItem = item,
+                                onSelectedCallBack = {
+                                    inputParameters[index] = it
+                                }
+                            )
+                            IconButton(onClick = {
+                                inputParameters.removeAt(index)
+                            }) {
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete Option")
+                            }
+                        }
                     }
                 }
             }
@@ -193,7 +202,7 @@ fun EditSceneUUIDScreen(
                 title,
                 story,
                 choices,
-                inputParameters,
+                inputParameters.toMutableList(),
                 isEndingScene,
                 isFirstScene
             )

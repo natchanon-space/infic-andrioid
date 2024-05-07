@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import java.lang.Integer.min
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,12 +21,18 @@ fun <T> DropDownSearch(
     items: List<T>,
     defaultSelectedItem: T? = null,
     mapper: (T) -> String,
-    onSelectedCallBack: () -> Unit = { },
+    onSelectedCallBack: (String) -> Unit = { },
     modifier: Modifier = Modifier
 ) {
-    val options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5")
+    val options = items.map(mapper)
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0]) }
+    var defaultOptionIndex = max(options.indexOf(defaultSelectedItem?.let { mapper(it) } ?: 0), 0)
+    var selectedOptionText by remember {
+        mutableStateOf(options[defaultOptionIndex])
+    }
+
+    // return default option
+    onSelectedCallBack(selectedOptionText)
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -59,6 +67,7 @@ fun <T> DropDownSearch(
                     onClick = {
                         selectedOptionText = selectionOption
                         expanded = false
+                        onSelectedCallBack(selectionOption)
                     }
                 )
             }
