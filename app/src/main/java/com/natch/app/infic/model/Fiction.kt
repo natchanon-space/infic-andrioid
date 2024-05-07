@@ -51,7 +51,7 @@ class Fiction constructor(
         title: String,
         story: String,
         choices: MutableList<Choice>,
-        inputParameter: String?,
+        inputParameters: MutableList<String>,
         isEndingScene: Boolean,
         isFirstScene: Boolean = false
     ) {
@@ -59,7 +59,7 @@ class Fiction constructor(
         scene.title = title
         scene.story = story
         scene.choices = choices
-        scene.inputParameter = inputParameter
+        scene.inputParameters = inputParameters
         scene.isEndingScene = isEndingScene
 
         // update first scene on check

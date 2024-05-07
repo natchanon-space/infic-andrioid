@@ -11,7 +11,7 @@ class Scene constructor(
 ) {
     var story: String = ""
     var choices = mutableListOf<Choice>()
-    var inputParameter: String? = null
+    var inputParameters = mutableListOf<String>()
     var isEndingScene: Boolean = false
 
     fun addChoice(choice: Choice) {

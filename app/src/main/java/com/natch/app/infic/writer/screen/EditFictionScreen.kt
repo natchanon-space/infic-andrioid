@@ -82,7 +82,7 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
                 EditSceneUUIDScreen()
             }
             composable("EditParameter") {
-                EditParameterScreen()
+                EditParameterScreen(viewModel)
             }
             composable("EditProfile") {
                 // TODO: (Optional) Change this to proper state handler (not just work around like this)

@@ -8,4 +8,6 @@ class Choice constructor(
     var text: String,
     @Serializable(with = UUIDSerializer::class)
     var nextSceneUUID: UUID?
+
+    // TODO: make choice more dynamic
 )
