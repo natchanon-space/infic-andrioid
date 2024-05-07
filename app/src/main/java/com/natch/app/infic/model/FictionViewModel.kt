@@ -4,7 +4,5 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class FictionViewModel: ViewModel() {
-    val currentFiction: MutableLiveData<Fiction> by lazy {
-        MutableLiveData<Fiction>()
-    }
+    val currentFiction: MutableLiveData<Fiction> = MutableLiveData()
 }

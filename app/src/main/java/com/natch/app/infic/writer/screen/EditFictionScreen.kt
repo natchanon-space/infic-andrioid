@@ -38,9 +38,14 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
     )
     val labelList = listOf("scene", "parameter", "profile")
 
+    var fictionTitle by rememberSaveable { mutableStateOf(viewModel.currentFiction.value!!.title) }
+    val onUpdateCallback = {
+        fictionTitle = viewModel.currentFiction.value!!.title
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("${viewModel.currentFiction.value?.title}") })
+            TopAppBar(title = { Text("$fictionTitle") })
         },
         bottomBar = {
             NavigationBar {
@@ -80,7 +85,8 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
                 EditParameterScreen()
             }
             composable("EditProfile") {
-                EditProfileScreen()
+                // TODO: (Optional) Change this to proper state handler (not just work around like this)
+                EditProfileScreen(viewModel, onUpdateCallback = onUpdateCallback)
             }
         }
     }

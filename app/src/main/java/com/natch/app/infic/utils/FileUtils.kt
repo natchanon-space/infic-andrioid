@@ -50,4 +50,12 @@ fun deleteFictionFromDir(fiction: Fiction, context: Context) {
     }
 }
 
+fun fictionToJson(fiction: Fiction): String {
+    return Json.encodeToString(fiction)
+}
+
+fun jsonToFiction(jsonString: String): Fiction {
+    return Json.decodeFromString(jsonString)
+}
+
 const val TAG = "FileUtils"
