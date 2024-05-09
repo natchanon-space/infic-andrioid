@@ -44,6 +44,7 @@ import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.DropDownSearch
 import kotlinx.coroutines.launch
+import java.lang.Integer.max
 import java.util.UUID
 
 @Composable
@@ -93,6 +94,8 @@ fun EditSceneUUIDScreen(
         }
     }
 
+    // TODO: update template to be more suitable
+    // TODO: add dialog to confirm when save these update
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -166,7 +169,13 @@ fun EditSceneUUIDScreen(
             if (enableInputs && viewModel.currentFiction.value!!.parameters.isNotEmpty()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Input Parameters")
-                    IconButton(onClick = { inputParameters.add(viewModel.currentFiction.value!!.parameters.keys.elementAt(0)) }) {
+                    IconButton(onClick = {
+                        inputParameters.add(
+                            viewModel.currentFiction.value!!.parameters.keys.elementAt(
+                                0
+                            )
+                        )
+                    }) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Parameter Icon")
                     }
                 }
@@ -200,6 +209,7 @@ fun EditSceneUUIDScreen(
         }
 
         // choices
+        // TODO: (optional) fix work around! this is not appropriate
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Choice")
@@ -212,7 +222,9 @@ fun EditSceneUUIDScreen(
                     Icon(Icons.Filled.Add, contentDescription = "Add Choice Icon")
                 }
             }
+
             // list of choices
+            // NOTE: too much work around, best to not touch this!
             LazyColumn(
                 state = lazyChoiceState,
                 modifier = Modifier.heightIn(max = 1000.dp)
@@ -221,30 +233,39 @@ fun EditSceneUUIDScreen(
                     choices,
                     key = { index, _ -> "item-${index}" }
                 ) { index, item ->
-                    var choiceTitle by rememberSaveable { mutableStateOf(item.text) }
+                    var choiceTitle by rememberSaveable { mutableStateOf(currentScene.choices[index].text) }
 
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Card {
+
                             TextField(
                                 value = choiceTitle,
                                 onValueChange = {
                                     currentScene.choices[index].text = it
-                                    choiceTitle = it
+                                    choiceTitle = currentScene.choices[index].text
                                 }
                             )
                             DropDownSearch(
                                 items = viewModel.currentFiction.value!!.scenes,
                                 mapper = { c -> c.uuid.toString() },
                                 advancedMapper = { s ->
-                                    viewModel.currentFiction.value!!.getSceneByUUID(UUID.fromString(s))?.title ?: ""
+                                    viewModel.currentFiction.value!!.getSceneByUUID(
+                                        UUID.fromString(
+                                            s
+                                        )
+                                    )?.title ?: ""
                                 },
                                 defaultSelectedItem = viewModel.currentFiction.value!!.getSceneByUUID(
                                     item.nextSceneUUID
                                 ),
                                 onSelectedCallBack = {
                                     try {
-                                        currentScene.choices[index].nextSceneUUID = UUID.fromString(it)
-                                        Log.d("DEBUG", "choices index${index} => ${currentScene.choices[index].nextSceneUUID}")
+                                        currentScene.choices[index].nextSceneUUID =
+                                            UUID.fromString(it)
+                                        Log.d(
+                                            "DEBUG",
+                                            "choices index${index} => ${currentScene.choices[index].nextSceneUUID}"
+                                        )
 
                                     } catch (exception: Exception) {
                                         exception.printStackTrace()
@@ -252,6 +273,14 @@ fun EditSceneUUIDScreen(
                                     }
                                 },
                             )
+                        }
+                        IconButton(onClick = {
+                            currentScene.choices.removeAt(index)
+                            choices.clear()
+                            choices.addAll(currentScene.choices)
+                            choiceTitle = currentScene.choices[max(index+1, currentScene.choices.size-1)].text
+                        }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete Choice")
                         }
                     }
                 }
