@@ -56,11 +56,12 @@ class Fiction constructor(
         isFirstScene: Boolean = false
     ) {
         // update scene attributes
-        scene.title = title
-        scene.story = story
-        scene.choices = choices
-        scene.inputParameters = inputParameters
-        scene.isEndingScene = isEndingScene
+        val update = getSceneByUUID(scene.uuid)!!
+        update.title = title
+        update.story = story
+        update.choices = choices
+        update.inputParameters = inputParameters
+        update.isEndingScene = isEndingScene
 
         // update first scene on check
         if (isFirstScene) {
@@ -77,13 +78,16 @@ class Fiction constructor(
         scenes.remove(scene)
     }
 
-    fun getSceneByUUID(uuid: UUID): Scene {
+    fun getSceneByUUID(uuid: UUID?): Scene? {
+        if (uuid == null) {
+            return null
+        }
         for (scene in scenes) {
             if (scene.uuid == uuid) {
                 return scene
             }
         }
-        throw Exception("Scene with UUID <$uuid> is not found.")
+        return null
     }
 
     fun getJsonName(): String {

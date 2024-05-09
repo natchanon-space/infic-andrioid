@@ -1,5 +1,6 @@
 package com.natch.app.infic.writer.component
 
+import android.util.Log
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -21,18 +22,22 @@ fun <T> DropDownSearch(
     items: List<T>,
     defaultSelectedItem: T? = null,
     mapper: (T) -> String,
+    advancedMapper: (String) -> String = { s -> s },
     onSelectedCallBack: (String) -> Unit = { },
     modifier: Modifier = Modifier
 ) {
-    val options = items.map(mapper)
+    val mixMapper = { item: T -> advancedMapper(mapper(item)) }
+    val originalOptions = items.map(mapper)
+    val options = items.map(mixMapper)
     var expanded by remember { mutableStateOf(false) }
-    var defaultOptionIndex = max(options.indexOf(defaultSelectedItem?.let { mapper(it) } ?: 0), 0)
+    var defaultOptionIndex = max(options.indexOf(defaultSelectedItem?.let { mixMapper(it) } ?: 0), 0)
     var selectedOptionText by remember {
         mutableStateOf(options[defaultOptionIndex])
     }
 
     // return default option
-    onSelectedCallBack(selectedOptionText)
+//    Log.d("DEBUG", "initial callback -> default value")
+//    onSelectedCallBack(originalOptions[defaultOptionIndex])
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -59,7 +64,7 @@ fun <T> DropDownSearch(
                 expanded = false
             }
         ) {
-            options.forEach { selectionOption ->
+            options.forEachIndexed { index, selectionOption ->
                 DropdownMenuItem(
                     text = {
                         Text(text = selectionOption)
@@ -67,7 +72,9 @@ fun <T> DropDownSearch(
                     onClick = {
                         selectedOptionText = selectionOption
                         expanded = false
-                        onSelectedCallBack(selectionOption)
+                        Log.d("DEBUG", "onSelectCallback -> set value")
+                        Log.d("DEBUG", originalOptions[index])
+                        onSelectedCallBack(originalOptions[index])
                     }
                 )
             }

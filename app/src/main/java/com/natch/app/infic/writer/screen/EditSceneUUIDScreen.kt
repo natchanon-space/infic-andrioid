@@ -1,5 +1,6 @@
 package com.natch.app.infic.writer.screen
 
+import android.util.Log
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +39,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.natch.app.infic.model.Choice
 import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.DropDownSearch
@@ -52,11 +54,14 @@ fun EditSceneUUIDScreen(
 ) {
     val context = LocalContext.current
 
-    val currentScene = viewModel.currentFiction.value!!.getSceneByUUID(UUID.fromString(uuidString))
+    val currentScene =
+        viewModel.currentFiction.value!!.getSceneByUUID(UUID.fromString(uuidString))!!
 
     var title by rememberSaveable { mutableStateOf(currentScene.title) }
     var story by rememberSaveable { mutableStateOf(currentScene.story) }
-    val choices by rememberSaveable { mutableStateOf(currentScene.choices) }
+    val choices = remember { mutableStateListOf<Choice>() }
+    choices.clear()
+    choices.addAll(currentScene.choices)
     val inputParameters = remember { mutableStateListOf<String>() }
     inputParameters.clear()
     inputParameters.addAll(currentScene.inputParameters)
@@ -65,7 +70,8 @@ fun EditSceneUUIDScreen(
 
     var enableInputs by rememberSaveable { mutableStateOf(inputParameters.size > 0) }
 
-    val lazyState = rememberLazyListState()
+    val lazyParameterState = rememberLazyListState()
+    val lazyChoiceState = rememberLazyListState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -157,21 +163,21 @@ fun EditSceneUUIDScreen(
                 )
                 Text("Enable Input Parameters")
             }
-            if (enableInputs) {
+            if (enableInputs && viewModel.currentFiction.value!!.parameters.isNotEmpty()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Input Parameters")
-                    IconButton(onClick = { inputParameters.add("") }) {
+                    IconButton(onClick = { inputParameters.add(viewModel.currentFiction.value!!.parameters.keys.elementAt(0)) }) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Parameter Icon")
                     }
                 }
                 // list of input parameters
                 LazyColumn(
-                    state = lazyState,
+                    state = lazyParameterState,
                     modifier = Modifier.heightIn(max = 1000.dp)
                 ) {
                     itemsIndexed(
                         inputParameters,
-                        key = { index, _ -> "item-${index}"}
+                        key = { index, _ -> "item-${index}" }
                     ) { index, item ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             DropDownSearch(
@@ -194,6 +200,63 @@ fun EditSceneUUIDScreen(
         }
 
         // choices
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Choice")
+                IconButton(onClick = {
+                    // initial selection
+                    val newChoice = Choice("", currentScene.uuid)
+                    choices.add(newChoice)
+                    currentScene.choices.add(newChoice)
+                }) {
+                    Icon(Icons.Filled.Add, contentDescription = "Add Choice Icon")
+                }
+            }
+            // list of choices
+            LazyColumn(
+                state = lazyChoiceState,
+                modifier = Modifier.heightIn(max = 1000.dp)
+            ) {
+                itemsIndexed(
+                    choices,
+                    key = { index, _ -> "item-${index}" }
+                ) { index, item ->
+                    var choiceTitle by rememberSaveable { mutableStateOf(item.text) }
+
+                    Row {
+                        Card {
+                            TextField(
+                                value = choiceTitle,
+                                onValueChange = {
+                                    currentScene.choices[index].text = it
+                                    choiceTitle = it
+                                }
+                            )
+                            DropDownSearch(
+                                items = viewModel.currentFiction.value!!.scenes,
+                                mapper = { c -> c.uuid.toString() },
+                                advancedMapper = { s ->
+                                    viewModel.currentFiction.value!!.getSceneByUUID(UUID.fromString(s))?.title ?: ""
+                                },
+                                defaultSelectedItem = viewModel.currentFiction.value!!.getSceneByUUID(
+                                    item.nextSceneUUID
+                                ),
+                                onSelectedCallBack = {
+                                    try {
+                                        currentScene.choices[index].nextSceneUUID = UUID.fromString(it)
+                                        Log.d("DEBUG", "choices index${index} => ${currentScene.choices[index].nextSceneUUID}")
+
+                                    } catch (exception: Exception) {
+                                        exception.printStackTrace()
+                                        currentScene.choices[index].nextSceneUUID = null
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         // save button
         Button(onClick = {
@@ -201,11 +264,12 @@ fun EditSceneUUIDScreen(
                 currentScene,
                 title,
                 story,
-                choices,
+                currentScene.choices,
                 inputParameters.toMutableList(),
                 isEndingScene,
                 isFirstScene
             )
+            writeFictionToJsonFile(viewModel.currentFiction.value!!, context)
             onFictionUpdate()
             saveCallback()
         }) {
