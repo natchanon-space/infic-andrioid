@@ -30,6 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.natch.app.infic.model.FictionViewModel
+import com.natch.app.infic.utils.toParameterBracket
+import com.natch.app.infic.utils.toParameterPattern
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.MultiSelectionList
 import com.natch.app.infic.writer.component.rememberMultiSelectionState
@@ -58,16 +60,17 @@ fun EditParameterScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Parameter Setting")
-            Spacer(modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth())
+            Spacer(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            )
             if (!multiSelectionState.isMultiSelectionModeEnabled) {
                 // add parameter button
                 IconButton(onClick = { addParameterDialog = true }) {
                     Icon(Icons.Filled.Add, contentDescription = "Add Icon")
                 }
-            }
-            else {
+            } else {
                 // cancel button
                 IconButton(onClick = {
                     selectedItems.clear()
@@ -107,11 +110,11 @@ fun EditParameterScreen(
             },
             onClick = { parameterNames ->
                 if (multiSelectionState.isMultiSelectionModeEnabled) {
-                   if (parameterNames in selectedItems) {
-                       selectedItems.remove(parameterNames)
-                   } else {
-                       selectedItems.add(parameterNames)
-                   }
+                    if (parameterNames in selectedItems) {
+                        selectedItems.remove(parameterNames)
+                    } else {
+                        selectedItems.add(parameterNames)
+                    }
                 } else {
                     // open edit dialog
                     editParameterName = parameterNames
@@ -141,7 +144,7 @@ fun EditParameterScreen(
                     OutlinedTextField(
                         value = defaultValue,
                         onValueChange = { defaultValue = it },
-                        label = { Text("default value" )},
+                        label = { Text("default value") },
                         maxLines = 1,
                     )
 
@@ -156,7 +159,8 @@ fun EditParameterScreen(
                         }
                         Button(
                             onClick = {
-                                viewModel.currentFiction.value!!.parameters[parameterName] = defaultValue
+                                viewModel.currentFiction.value!!.parameters[parameterName] =
+                                    defaultValue
                                 onFictionUpdate()
                                 addParameterDialog = false
                             }
@@ -171,7 +175,11 @@ fun EditParameterScreen(
 
     if (editParameterDialog) {
         var parameterName by rememberSaveable { mutableStateOf(editParameterName) }
-        var defaultValue by rememberSaveable { mutableStateOf("") }
+        var defaultValue by rememberSaveable {
+            mutableStateOf(
+                viewModel.currentFiction.value!!.parameters[parameterName] ?: ""
+            )
+        }
 
         Dialog(onDismissRequest = { editParameterDialog = false }) {
             Card(modifier = Modifier.wrapContentSize()) {
@@ -187,7 +195,7 @@ fun EditParameterScreen(
                     OutlinedTextField(
                         value = defaultValue,
                         onValueChange = { defaultValue = it },
-                        label = { Text("default value" )},
+                        label = { Text("default value") },
                         maxLines = 1,
                     )
 
@@ -202,10 +210,26 @@ fun EditParameterScreen(
                         }
                         Button(
                             onClick = {
+                                // replace changed parameter name to those scenes where they exists
+                                if (editParameterName != parameterName) {
+                                    viewModel.currentFiction.value!!.scenes.forEach { scene ->
+                                        // replacing in scene's stories
+                                        scene.story = scene.story.replace(
+                                            editParameterName.toParameterPattern(),
+                                            parameterName.toParameterBracket()
+                                        )
+                                        // replacing in scene's input parameters
+                                        val index = scene.inputParameters.indexOf(editParameterName)
+                                        if (index != -1) {
+                                            scene.inputParameters[index] = parameterName
+                                        }
+                                    }
+                                }
                                 // remove previous parameter name
                                 viewModel.currentFiction.value!!.parameters.remove(editParameterName)
                                 // update new one
-                                viewModel.currentFiction.value!!.parameters[parameterName] = defaultValue
+                                viewModel.currentFiction.value!!.parameters[parameterName] =
+                                    defaultValue
                                 onFictionUpdate()
                                 editParameterDialog = false
                             }

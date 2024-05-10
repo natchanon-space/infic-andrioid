@@ -38,14 +38,14 @@ fun SceneCard(
                 Text(
                     "Ending Scene",
                     modifier = Modifier
-                        .padding(10.dp, 10.dp, 10.dp, 0.dp)
+                        .padding(10.dp, 0.dp, 10.dp, 10.dp)
                 )
             }
             if (scene.isFirstScene) {
                 Text(
                     "First Scene",
                     modifier = Modifier
-                        .padding(10.dp, 10.dp, 10.dp, 0.dp)
+                        .padding(10.dp, 0.dp, 10.dp, 10.dp)
                 )
             }
         }

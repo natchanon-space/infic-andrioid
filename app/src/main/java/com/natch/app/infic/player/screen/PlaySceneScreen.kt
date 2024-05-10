@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.natch.app.infic.model.FictionViewModel
+import com.natch.app.infic.utils.replaceParameters
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,12 +52,12 @@ fun PlaySceneScreen(
         ) {
             // render story
             Text(
-                replaceParameter(currentScene.story, viewModel.currentFiction.value!!.parameters),
+                replaceParameters(currentScene.story, viewModel.currentFiction.value!!.parameters),
                 modifier = Modifier
                     .wrapContentHeight()
                     .fillMaxWidth()
             )
-            Log.d("DEBUG", replaceParameter(currentScene.story, viewModel.currentFiction.value!!.parameters))
+            Log.d("DEBUG", replaceParameters(currentScene.story, viewModel.currentFiction.value!!.parameters))
 
             // render input parameters
             if (currentScene.inputParameters.isNotEmpty()) {
@@ -104,17 +105,4 @@ fun PlaySceneScreen(
             }
         }
     }
-}
-
-fun replaceParameter(story: String, parameters: Map<String, String>): String {
-    var temp = story
-    parameters.forEach {
-        Log.d("DEBUG", "replace {${it.key}} with ${it.value}")
-        val pattern = Regex("\\{${it.key}\\}")
-        temp = temp.replace(
-            pattern,
-            it.value
-        )
-    }
-    return temp
 }
