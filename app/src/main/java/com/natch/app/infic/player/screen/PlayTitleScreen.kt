@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.natch.app.infic.model.FictionViewModel
@@ -29,12 +30,14 @@ fun PlayTitleScreen(
         Text(
             fiction.title,
             fontSize = 32.sp,
-            modifier = Modifier.padding(10.dp, 10.dp, 10.dp, 0.dp)
+            modifier = Modifier.padding(10.dp, 10.dp, 10.dp, 0.dp),
+            textAlign = TextAlign.Center
         )
         Text(
             "By ${fiction.author}",
             fontStyle = FontStyle.Italic,
-            modifier = Modifier.padding(10.dp, 10.dp, 10.dp, 0.dp)
+            modifier = Modifier.padding(10.dp, 10.dp, 10.dp, 0.dp),
+            textAlign = TextAlign.Center
         )
         Button(onClick = { onStartFiction() }) {
             Text("Play")

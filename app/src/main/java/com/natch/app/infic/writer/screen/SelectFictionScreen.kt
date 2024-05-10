@@ -106,7 +106,7 @@ fun SelectFictionScreen(
         }
     ) {
         MultiSelectionList(
-            modifier = Modifier.padding(top = it.calculateTopPadding()),
+            modifier = Modifier.padding(top = it.calculateTopPadding()).padding(10.dp, 0.dp),
             state = multiSelectionState,
             items = fictions,
             selectedItems = selectedItems,

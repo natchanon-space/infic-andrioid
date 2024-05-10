@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.utils.readAllFictionsFromDir
 import com.natch.app.infic.writer.component.FictionCard
@@ -33,7 +34,8 @@ fun PlaySelectionScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(10.dp, 0.dp),
             userScrollEnabled = true
         ) {
             itemsIndexed(
