@@ -44,7 +44,6 @@ import com.natch.app.infic.model.FictionViewModel
 import com.natch.app.infic.utils.writeFictionToJsonFile
 import com.natch.app.infic.writer.component.DropDownSearch
 import kotlinx.coroutines.launch
-import java.lang.Integer.max
 import java.lang.Integer.min
 import java.util.UUID
 
@@ -279,10 +278,13 @@ fun EditSceneUUIDScreen(
                             currentScene.choices.removeAt(index)
                             choices.clear()
                             choices.addAll(currentScene.choices)
-                            if (currentScene.choices.isNotEmpty()) {
-                                choiceTitle = currentScene.choices[min(index+1, currentScene.choices.size-1)].text
+                            choiceTitle = if (currentScene.choices.isNotEmpty()) {
+                                currentScene.choices[min(
+                                    index + 1,
+                                    currentScene.choices.size - 1
+                                )].text
                             } else {
-                                choiceTitle = ""
+                                ""
                             }
                         }) {
                             Icon(Icons.Filled.Delete, contentDescription = "Delete Choice")

@@ -67,7 +67,7 @@ fun SelectFictionScreen(
                 // delete fictions
                 // TODO: add dialog before confirming delete
                 TopAppBar(
-                    title = { },
+                    title = { Text("Select") },
                     navigationIcon = {
                         IconButton(onClick = {
                             selectedItems.clear()
@@ -93,7 +93,7 @@ fun SelectFictionScreen(
             } else {
                 // add fiction
                 TopAppBar(
-                    title = { Text("Writer") },
+                    title = { Text("INFIC Writer") },
                     actions = {
                         IconButton(onClick = { addFictionDialog = true }) {
                             Icon(Icons.Filled.Add, contentDescription = "Add Fiction")
@@ -110,7 +110,7 @@ fun SelectFictionScreen(
             state = multiSelectionState,
             items = fictions,
             selectedItems = selectedItems,
-            itemContent = {fiction ->
+            itemContent = { fiction ->
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterStart
@@ -131,7 +131,7 @@ fun SelectFictionScreen(
             key = { fiction ->
                 fictions.indexOf(fiction)
             },
-            onClick = {fiction ->
+            onClick = { fiction ->
                 if (multiSelectionState.isMultiSelectionModeEnabled) {
                     if (fiction in selectedItems) {
                         selectedItems.remove(fiction)
@@ -168,7 +168,7 @@ fun SelectFictionScreen(
                     OutlinedTextField(
                         value = author,
                         onValueChange = { author = it },
-                        label = { Text("Author" )},
+                        label = { Text("Author") },
                         maxLines = 1,
                     )
 

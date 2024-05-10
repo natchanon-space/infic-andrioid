@@ -13,24 +13,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import java.lang.Integer.min
 import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> DropDownSearch(
     items: List<T>,
-    defaultSelectedItem: T? = null,
     mapper: (T) -> String,
+    modifier: Modifier = Modifier,
+    defaultSelectedItem: T? = null,
     advancedMapper: (String) -> String = { s -> s },
     onSelectedCallBack: (String) -> Unit = { },
-    modifier: Modifier = Modifier
 ) {
     val mixMapper = { item: T -> advancedMapper(mapper(item)) }
     val originalOptions = items.map(mapper)
     val options = items.map(mixMapper)
     var expanded by remember { mutableStateOf(false) }
-    var defaultOptionIndex = max(options.indexOf(defaultSelectedItem?.let { mixMapper(it) } ?: 0), 0)
+    val defaultOptionIndex =
+        max(options.indexOf(defaultSelectedItem?.let { mixMapper(it) } ?: 0), 0)
     var selectedOptionText by remember {
         mutableStateOf(options[defaultOptionIndex])
     }

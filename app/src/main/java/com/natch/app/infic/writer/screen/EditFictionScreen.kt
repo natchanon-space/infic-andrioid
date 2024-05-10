@@ -45,7 +45,7 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("$fictionTitle") })
+            TopAppBar(title = { Text(fictionTitle) })
         },
         bottomBar = {
             NavigationBar {
@@ -111,6 +111,3 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
     }
 }
 
-fun saveFiction() {
-
-}
