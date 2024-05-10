@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -57,9 +58,15 @@ class PlayerActivity : ComponentActivity() {
                             PlaySceneScreen(
                                 viewModel,
                                 it.arguments?.getString("sceneUUID")!!,
-                                onSelectChoice = {uuid ->
+                                onSelectChoice = { uuid ->
                                     navController.navigate("PlayScene/${uuid}")
-                                })
+                                },
+                                onGameOver = {
+                                    navController.navigate("PlayTitle") {
+                                        popUpTo(navController.graph.id)
+                                    }
+                                }
+                            )
                         }
                     }
                 }

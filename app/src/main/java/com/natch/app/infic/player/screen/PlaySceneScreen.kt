@@ -98,7 +98,6 @@ fun PlaySceneScreen(
                 Column {
                     Text("The End")
                     Button(onClick = { onGameOver() }) {
-                        // TODO: handle game-over/ending scene
                         Text("Next")
                     }
                 }
