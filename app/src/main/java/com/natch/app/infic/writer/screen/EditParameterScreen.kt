@@ -1,6 +1,5 @@
 package com.natch.app.infic.writer.screen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -98,11 +97,14 @@ fun EditParameterScreen(
             items = parameterNames,
             selectedItems = selectedItems,
             itemContent = { parameterName ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterStart
+                Row(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(parameterName + ": " + viewModel.currentFiction.value!!.parameters[parameterName])
+                    Text(parameterName, modifier = Modifier.fillMaxWidth(0.2f))
+                    Text(
+                        "= ${viewModel.currentFiction.value!!.parameters[parameterName]!!}",
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
                 }
             },
             key = { parameterNames ->

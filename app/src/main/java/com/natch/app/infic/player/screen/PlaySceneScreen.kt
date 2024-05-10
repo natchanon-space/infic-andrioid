@@ -3,6 +3,8 @@ package com.natch.app.infic.player.screen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.natch.app.infic.model.FictionViewModel
@@ -42,7 +45,7 @@ fun PlaySceneScreen(
             TopAppBar(title = { Text(currentScene.title) })
         },
         modifier = Modifier.fillMaxSize()
-    ) {paddingValues ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -56,9 +59,8 @@ fun PlaySceneScreen(
                 modifier = Modifier
                     .wrapContentHeight()
                     .fillMaxWidth()
+                    .padding(0.dp, 10.dp)
             )
-            Log.d("DEBUG", replaceParameters(currentScene.story, viewModel.currentFiction.value!!.parameters))
-
             // render input parameters
             if (currentScene.inputParameters.isNotEmpty()) {
                 currentScene.inputParameters.forEach { key ->
@@ -67,38 +69,52 @@ fun PlaySceneScreen(
                             viewModel.currentFiction.value!!.parameters[key] ?: ""
                         )
                     }
-
-                    TextField(
-                        value = inputState,
-                        onValueChange = {
-                            inputState = it
-                            viewModel.currentFiction.value!!.parameters[key] = it
-                        }
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(key, modifier = Modifier.fillMaxWidth(0.2f))
+                        TextField(
+                            value = inputState,
+                            onValueChange = {
+                                inputState = it
+                                viewModel.currentFiction.value!!.parameters[key] = it
+                            },
+                            modifier = Modifier.fillMaxWidth(0.8f)
+                        )
+                    }
                 }
             }
 
             // render choices
             if (currentScene.choices.isNotEmpty()) {
-                currentScene.choices.forEach { choice ->
-                    Button(onClick = {
-                        if (choice.nextSceneUUID != null) {
-                            onSelectChoice(choice.nextSceneUUID!!)
-                        } else {
-                            // TODO: handle null next screen!
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    currentScene.choices.forEach { choice ->
+                        Button(onClick = {
+                            if (choice.nextSceneUUID != null) {
+                                onSelectChoice(choice.nextSceneUUID!!)
+                            } else {
+                                // TODO: handle null next screen!
+                            }
+                        }) {
+                            Text(choice.text)
                         }
-                    }) {
-                        Text(choice.text)
                     }
                 }
             }
 
             // case of game over
             if (currentScene.isEndingScene) {
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text("The End")
                     Button(onClick = { onGameOver() }) {
-                        Text("Next")
+                        Text("Start Over")
                     }
                 }
             }
