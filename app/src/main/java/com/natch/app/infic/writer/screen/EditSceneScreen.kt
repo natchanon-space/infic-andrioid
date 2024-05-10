@@ -98,7 +98,9 @@ fun EditSceneScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    SceneCard(scene, modifier = Modifier.fillMaxWidth())
+                    SceneCard(scene, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp, 5.dp))
                 }
             },
             onClick = { scene ->
