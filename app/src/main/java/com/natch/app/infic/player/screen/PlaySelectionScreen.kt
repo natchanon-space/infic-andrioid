@@ -2,6 +2,7 @@ package com.natch.app.infic.player.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,10 +32,12 @@ fun PlaySelectionScreen(
         ) { _, fiction ->
             FictionCard(
                 fiction,
-                modifier = Modifier.clickable {
-                    viewModel.currentFiction.value = fiction
-                    onSelectFiction()
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        viewModel.currentFiction.value = fiction
+                        onSelectFiction()
+                    }
             )
         }
     }
