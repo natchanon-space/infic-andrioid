@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -30,13 +31,14 @@ import com.natch.app.infic.model.FictionViewModel
 fun EditFictionScreen(viewModel: FictionViewModel) {
     val navController = rememberNavController()
     var navSelectedItem by rememberSaveable { mutableStateOf(0) }
-    val routeList = listOf("EditScene", "EditParameter", "EditProfile")
+    val routeList = listOf("EditScene", "EditTreeView", "EditParameter", "EditProfile")
     val iconList = listOf(
         Icons.Filled.List,
+        Icons.Filled.Share,
         Icons.Filled.Build,
         Icons.Filled.AccountCircle
     )
-    val labelList = listOf("scene", "parameter", "profile")
+    val labelList = listOf("scene", "tree", "parameter", "profile")
 
     var fictionTitle by rememberSaveable { mutableStateOf(viewModel.currentFiction.value!!.title) }
     val onUpdateCallback = {
@@ -83,6 +85,9 @@ fun EditFictionScreen(viewModel: FictionViewModel) {
                         }
                     }
                 })
+            }
+            composable("EditTreeView") {
+                EditTreeView(viewModel)
             }
             composable(
                 "EditScene/{sceneUUID}",

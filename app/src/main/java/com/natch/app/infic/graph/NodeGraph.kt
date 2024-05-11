@@ -1,5 +1,6 @@
 package com.natch.app.infic.graph
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -28,18 +29,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.sqrt
 
-class Edge<T>(val start: T, val end: T)
+class Edge<String>(val start: String, val end: String, var bidirectional: Boolean = false)
 
-class Graph<T>(val edges: List<Edge<T>>, options: GraphOptions = GraphOptions()) {
-    private val nodePositions: MutableMap<T, IntRect> = mutableMapOf()
-    private val _positions = MutableStateFlow<Map<T, IntOffset>>(emptyMap())
-    var positions: StateFlow<Map<T, IntOffset>> = _positions
+class Graph<String>(val edges: List<Edge<String>>, options: GraphOptions = GraphOptions()) {
+    private val nodePositions: MutableMap<String, IntRect> = mutableMapOf()
+    private val _positions = MutableStateFlow<Map<String, IntOffset>>(emptyMap())
+    var positions: StateFlow<Map<String, IntOffset>> = _positions
 
     private val horizontalPadding = options.horizontalPadding
     private val verticalPadding = options.verticalPadding
 
     private var needLayout = true
-    fun placeNodes(measured: Map<T, Placeable>) {
+    fun placeNodes(measured: Map<String, Placeable>) {
 
         if (!needLayout) {
             return
@@ -69,21 +70,18 @@ class Graph<T>(val edges: List<Edge<T>>, options: GraphOptions = GraphOptions())
         _positions.value = nodePositions.mapValues { it.value.topLeft }
     }
 
-    private fun layerWidth(layer: List<T>, measured: Map<T, Placeable>): Int {
+    private fun layerWidth(layer: List<String>, measured: Map<String, Placeable>): Int {
         return layer.map { measured[it]?.width ?: 0 }.sum() + (layer.size - 1) * horizontalPadding
     }
 
-    private fun splitIntoLayers(nodes: Set<T>): List<List<T>> {
-        val collectedLayers = mutableListOf<List<T>>()
+    private fun splitIntoLayers(nodes: Set<String>): List<List<String>> {
+        val collectedLayers = mutableListOf<List<String>>()
         var currentLayer = nodes.toMutableSet()
         do {
             val nextLayer = edges
                 .filter { currentLayer.contains(it.end) }
                 .map { it.start }
                 .toSet()
-
-            // TODO: handle cycle in graph!
-
             currentLayer.removeAll(nextLayer)
             collectedLayers.add(currentLayer.toList())
             currentLayer = nextLayer.toMutableSet()
@@ -97,17 +95,22 @@ class Graph<T>(val edges: List<Edge<T>>, options: GraphOptions = GraphOptions())
         edges.forEach { edge ->
             nodePositions[edge.start]?.let { startRect ->
                 nodePositions[edge.end]?.let { endRect ->
-                    val end = intersectRectangle(startRect, endRect.center.toOffset())
-                    val start = intersectRectangle(endRect, startRect.center.toOffset())
-
+                    val start = intersectRectangle(startRect, endRect.center.toOffset())
+                    val end = intersectRectangle(endRect, startRect.center.toOffset())
                     arrows.add(Arrow(start, end))
+
+                    if (edge.bidirectional) {
+                        val end = intersectRectangle(startRect, endRect.center.toOffset())
+                        val start = intersectRectangle(endRect, startRect.center.toOffset())
+                        arrows.add(Arrow(start, end))
+                    }
                 }
             }
         }
         return arrows
     }
 
-    private var dragNode: T? = null
+    private var dragNode: String? = null
     fun dragStart(position: Offset) {
         dragNode =
             nodePositions.filter { it.value.contains(position.toIntOffSet()) }.keys.firstOrNull()
@@ -118,6 +121,7 @@ class Graph<T>(val edges: List<Edge<T>>, options: GraphOptions = GraphOptions())
             nodePositions[node]?.let { r ->
                 nodePositions[node] = r.translate(dragAmount.toIntOffSet())
                 _positions.value = nodePositions.mapValues { v -> v.value.topLeft }
+                Log.d("DEBUG", "dragging $node")
             }
         }
     }
@@ -130,7 +134,7 @@ private fun Offset.toIntOffSet(): IntOffset = IntOffset(x.toInt(), y.toInt())
 data class Arrow(val start: Offset, val end: Offset)
 
 @Composable
-fun <T> NodeGraph(graph: Graph<T>, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun <String> NodeGraph(graph: Graph<String>, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 
     val placed = graph.positions.collectAsState().value
 
@@ -138,9 +142,9 @@ fun <T> NodeGraph(graph: Graph<T>, modifier: Modifier = Modifier, content: @Comp
         .drawWithCache {
             onDrawWithContent {
                 drawContent()
-                graph
-                    .arrows()
-                    .forEach { drawArrow(Color.Blue, it.start, it.end) }
+                graph.arrows().forEach {
+                    drawArrow(Color.Blue, it.start, it.end)
+                }
             }
         }
         .pointerInput(Unit) {
@@ -152,7 +156,7 @@ fun <T> NodeGraph(graph: Graph<T>, modifier: Modifier = Modifier, content: @Comp
         }
     ) { modifiable, constraints ->
         val measured = modifiable.associate {
-            it.layoutId as T to it.measure(Constraints())
+            it.layoutId as String to it.measure(Constraints())
         }
 
         layout(constraints.maxWidth, constraints.maxHeight) {
@@ -165,7 +169,7 @@ fun <T> NodeGraph(graph: Graph<T>, modifier: Modifier = Modifier, content: @Comp
     }
 }
 
-private fun DrawScope.drawArrow(color: Color, start: Offset, end: Offset) {
+fun DrawScope.drawArrow(color: Color, start: Offset, end: Offset) {
     val headStart = moveAlongLine(end, start, 10f)
     drawLine(color, start, end)
     rotate(20f, end) {
@@ -221,7 +225,7 @@ val edges = listOf(
     Edge(nodes[1], nodes[0]),
     Edge(nodes[2], nodes[0]),
     Edge(nodes[3], nodes[1]),
-    Edge(nodes[3], nodes[2])
+    Edge(nodes[3], nodes[2], bidirectional = true),
 )
 
 val graph = Graph(edges)
